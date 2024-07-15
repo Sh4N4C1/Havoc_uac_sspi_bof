@@ -21,7 +21,7 @@ make
 ## Usage
 
 ```bash
-uac "powershell Start-Process -FilePath C:/windows/temp/launch.exe"
+uac_sspi "powershell Start-Process -FilePath C:/windows/temp/launch.exe"
 ```
 
 
