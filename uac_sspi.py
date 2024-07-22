@@ -1,26 +1,26 @@
 from havoc import Demon, RegisterCommand, RegisterModule
 from os.path import exists
 
-class Packer:
-    def __init__(self):
-        self.buffer: bytes = b''
-        self.size: int = 0
+# class Packer:
+#     def __init__(self):
+#         self.buffer: bytes = b''
+#         self.size: int = 0
 
-    def getbuffer(self):
-        return pack("<L", self.size) + self.buffer
+#     def getbuffer(self):
+#         return pack("<L", self.size) + self.buffer
 
-    def addstr(self, s):
-        if s is None:
-            s = ''
-        if isinstance(s, str):
-            s = s.encode("utf-8")
-        fmt = "<L{}s".format(len(s) + 1)
-        self.buffer += pack(fmt, len(s) + 1, s)
-        self.size += calcsize(fmt)
+#     def addstr(self, s):
+#         if s is None:
+#             s = ''
+#         if isinstance(s, str):
+#             s = s.encode("utf-8")
+#         fmt = "<L{}s".format(len(s) + 1)
+#         self.buffer += pack(fmt, len(s) + 1, s)
+#         self.size += calcsize(fmt)
 
-    def addint(self, dint):
-        self.buffer += pack("<i", dint)
-        self.size += 4
+#     def addint(self, dint):
+#         self.buffer += pack("<i", dint)
+#         self.size += 4
 
 def bof(demon_id, *args):
     
