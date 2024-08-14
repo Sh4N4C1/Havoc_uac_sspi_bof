@@ -18,7 +18,7 @@
 #ifdef BOF
 
 /* BOF Def */
-
+DECLSPEC_IMPORT     WINADVAPI WINBOOL WINAPI ADVAPI32$RevertToSelf();
 WINBASEAPI void* WINAPI MSVCRT$malloc(size_t size);
 DECLSPEC_IMPORT BOOL ADVAPI32$ImpersonateLoggedOnUser(
     HANDLE hToken

